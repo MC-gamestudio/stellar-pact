@@ -225,7 +225,7 @@ function PixelPlanet({atmosphere,water,gravity,flag,planetName}:{atmosphere:stri
 
   useEffect(()=>{
     const canvas = canvasRef.current; if(!canvas) return;
-    const ctx = canvas.getContext('2d'); if(!ctx) return;
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D; if(!ctx) return;
     const dpr = window.devicePixelRatio||1;
     const W=220, H=220;
     canvas.width=W*dpr; canvas.height=H*dpr;
