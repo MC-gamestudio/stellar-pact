@@ -308,32 +308,134 @@ function PixelPlanet({atmosphere,water,gravity,flag}:{atmosphere:string;water:st
 
 // ─── Custom Select ────────────────────────────────────────────────────────────
 
-function PixelSelect({label,icon,value,options,onChange}:{label:string;icon:React.ReactNode;value:string;options:string[];onChange:(v:string)=>void}) {
-  const [open,setOpen]=useState(false);
-  const ref=useRef<HTMLDivElement>(null);
-  useEffect(()=>{const h=(e:MouseEvent)=>{if(ref.current&&!ref.current.contains(e.target as Node))setOpen(false);};document.addEventListener('mousedown',h);return()=>document.removeEventListener('mousedown',h);},[]);
+function PixelPlanet({atmosphere,water,gravity,flag,planetName}:{atmosphere:string;water:string;gravity:string;flag:FlagConfig;planetName:string}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animRef = useRef<number>(0);
+  const pal = getPlanetPalette(atmosphere);
+  const {r,scaleY} = getGravityScale(gravity);
+
+  useEffect(()=>{
+    const canvas = canvasRef.current; if(!canvas) return;
+    const ctx = canvas.getContext('2d'); if(!ctx) return;
+    const dpr = window.devicePixelRatio||1;
+    const W=220, H=220;
+    canvas.width=W*dpr; canvas.height=H*dpr;
+    canvas.style.width=W+'px'; canvas.style.height=H+'px';
+    ctx.scale(dpr,dpr);
+    const cx=W/2, cy=H/2;
+    const ry=r*scaleY;
+
+    // stars — slow twinkle
+    const stars = Array.from({length:35},()=>({
+      x:Math.random()*W, y:Math.random()*H,
+      r:Math.random()*1.2+0.2,
+      alpha:Math.random(),
+      delta:(Math.random()-0.5)*0.004,
+    }));
+
+    let orbitAngle = 0;
+
+    function drawFrame(){
+      ctx.clearRect(0,0,W,H);
+      ctx.fillStyle='#03020f'; ctx.fillRect(0,0,W,H);
+
+      // slow stars
+      stars.forEach(s=>{
+        s.alpha+=s.delta;
+        if(s.alpha<=0.05||s.alpha>=0.9) s.delta*=-1;
+        ctx.globalAlpha=Math.max(0.05,Math.min(0.9,s.alpha));
+        ctx.fillStyle='white'; ctx.beginPath();
+        ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      });
+      ctx.globalAlpha=1;
+
+      // orbit ellipse (behind planet)
+      const orbitRx=r+28, orbitRy=10;
+      ctx.beginPath();
+      ctx.ellipse(cx,cy,orbitRx,orbitRy,0,0,Math.PI*2);
+      ctx.strokeStyle='rgba(192,132,252,0.2)'; ctx.lineWidth=1.5; ctx.stroke();
+
+      // planet body
+      const grad=ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,r*0.05,cx,cy,r);
+      grad.addColorStop(0,pal.shine); grad.addColorStop(0.45,pal.mid);
+      grad.addColorStop(0.8,pal.base); grad.addColorStop(1,pal.base+'80');
+      ctx.save(); ctx.beginPath();
+      ctx.ellipse(cx,cy,r,ry,0,0,Math.PI*2); ctx.clip();
+      ctx.fillStyle=grad; ctx.fillRect(cx-r,cy-ry,r*2,ry*2);
+
+      // water surface detail
+      if(water==='海洋型'||water==='超级海洋'){
+        ctx.fillStyle=pal.detail+'60';
+        ctx.beginPath(); ctx.ellipse(cx-12,cy-16,16,10,-.3,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(cx+16,cy+10,10,7,0,0,Math.PI*2); ctx.fill();
+      }
+      if(water==='冰封型'){
+        ctx.fillStyle='rgba(255,255,255,0.5)';
+        ctx.beginPath(); ctx.ellipse(cx,cy-ry+6,r*.6,12,0,0,Math.PI*2); ctx.fill();
+      }
+      if(water==='云海型'||water==='多相态混合'){
+        [-14,-2,10].forEach((dy,i)=>{
+          ctx.fillStyle=`rgba(255,255,255,${0.08+i*0.02})`;
+          ctx.beginPath(); ctx.ellipse(cx+(i%2===0?4:-4),cy+dy,r-6,5+i,0,0,Math.PI*2); ctx.fill();
+        });
+      }
+      if(water==='沙漠型'||water==='无水干燥'){
+        ctx.strokeStyle=pal.shine+'40'; ctx.lineWidth=1;
+        [[-18,-22,8,12],[12,-8,-4,24]].forEach(([x1,y1,x2,y2])=>{
+          ctx.beginPath(); ctx.moveTo(cx+x1,cy+y1); ctx.lineTo(cx+x2,cy+y2); ctx.stroke();
+        });
+      }
+      ctx.restore();
+
+      // shadow
+      const sh=ctx.createRadialGradient(cx+r*.3,cy+r*.3,0,cx+r*.3,cy+r*.3,r*.85);
+      sh.addColorStop(0,'rgba(0,0,10,0.55)'); sh.addColorStop(1,'rgba(0,0,10,0)');
+      ctx.beginPath(); ctx.ellipse(cx,cy,r,ry,0,0,Math.PI*2);
+      ctx.fillStyle=sh; ctx.fill();
+
+      // specular
+      ctx.beginPath(); ctx.ellipse(cx-r*.28,cy-ry*.28,r*.2,ry*.13,0,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fill();
+      ctx.beginPath(); ctx.ellipse(cx-r*.32,cy-ry*.32,r*.07,ry*.05,0,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.42)'; ctx.fill();
+
+      // rim glow
+      ctx.beginPath(); ctx.ellipse(cx,cy,r+1,ry+1,0,0,Math.PI*2);
+      ctx.strokeStyle=pal.glow+'66'; ctx.lineWidth=2; ctx.stroke();
+
+      // ring
+      ctx.beginPath(); ctx.ellipse(cx,cy,r+18,8,-.3,0,Math.PI*2);
+      ctx.strokeStyle=pal.detail+'30'; ctx.lineWidth=2; ctx.stroke();
+
+      // orbital flag marker
+      orbitAngle += 0.012;
+      const mx=cx+Math.cos(orbitAngle)*(r+28);
+      const my=cy+Math.sin(orbitAngle)*10;
+
+      // flag dot
+      ctx.beginPath(); ctx.arc(mx,my,8,0,Math.PI*2);
+      ctx.fillStyle=flag.color; ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,0.9)';
+      ctx.font='9px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(flag.shape,mx,my);
+
+      // planet name above flag dot (no background)
+      ctx.font='500 11px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.fillStyle='rgba(255,255,255,0.92)';
+      ctx.fillText(planetName, mx, my-10);
+
+      ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+
+      animRef.current = requestAnimationFrame(drawFrame);
+    }
+    drawFrame();
+    return ()=>cancelAnimationFrame(animRef.current);
+  },[atmosphere,water,gravity,flag,planetName,pal,r,scaleY]);
+
   return (
-    <div ref={ref} className="relative w-full">
-      <label className="block mb-1" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.82rem',color:'#94a3b8',fontWeight:300}}>
-        <span className="inline-flex items-center gap-1.5">{icon} {label}</span>
-      </label>
-      <button type="button" onClick={()=>setOpen(o=>!o)} className="w-full flex items-center justify-between px-4 py-2.5 focus:outline-none"
-        style={{background:'rgba(15,10,40,0.85)',border:`1px solid ${open?'rgba(139,92,246,0.7)':'rgba(139,92,246,0.35)'}`,fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.92rem',color:'#e2e8f0',fontWeight:300}}>
-        <span>{value}</span>
-        <ChevronDown size={14} className={`transition-transform duration-200 ${open?'rotate-180':''}`} style={{color:'#a855f7'}}/>
-      </button>
-      {open&&(
-        <div className="absolute z-50 w-full mt-0.5 max-h-56 overflow-y-auto" style={{background:'rgba(8,3,24,0.98)',border:'1px solid rgba(139,92,246,0.5)',boxShadow:'0 8px 32px rgba(139,92,246,0.25)'}}>
-          {options.map(opt=>(
-            <button key={opt} type="button" onClick={()=>{onChange(opt);setOpen(false);}} className="w-full text-left px-4 py-2"
-              style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.88rem',color:opt===value?'#c084fc':'#cbd5e1',fontWeight:300,borderBottom:'1px solid rgba(139,92,246,0.1)',background:opt===value?'rgba(88,28,135,0.25)':'transparent'}}
-              onMouseEnter={e=>{if(opt!==value)(e.currentTarget as HTMLElement).style.background='rgba(88,28,135,0.2)';}}
-              onMouseLeave={e=>{if(opt!==value)(e.currentTarget as HTMLElement).style.background='transparent';}}>
-              {opt===value?'▶ ':'\u00A0\u00A0'}{opt}
-            </button>
-          ))}
-        </div>
-      )}
+    <div className="flex justify-center">
+      <canvas ref={canvasRef} style={{borderRadius:'8px'}}/>
     </div>
   );
 }
@@ -408,7 +510,7 @@ function PlanetCard({planet,onClaim}:{planet:PlanetData;onClaim:()=>void}) {
   return (
     <div className="flex flex-col h-full" style={{opacity:visible?1:0,transform:visible?'translateX(0)':'translateX(28px)',transition:'opacity 0.45s ease,transform 0.45s ease'}}>
       <div className="flex justify-center mb-2">
-        <PixelPlanet atmosphere={planet.atmosphere} water={planet.water} gravity={planet.gravity} flag={planet.flag}/>
+        <PixelPlanet atmosphere={planet.atmosphere} water={planet.water} gravity={planet.gravity} flag={planet.flag} planetName={planet.name}/>
       </div>
       <div className="text-center mb-3">
         <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1.1rem',fontWeight:500,color:'#7dd3fc',wordBreak:'break-all'}}>{planet.name}</div>
@@ -583,23 +685,22 @@ export default function App() {
                 <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#475569',fontWeight:300}}>{selectedGalaxy.id} · {selectedGalaxy.dist}</span>
               </div>
 
-              {/* Planet setting unified hint */}
-              <div className="mb-4 px-3 py-2.5" style={{background:'rgba(124,58,237,0.06)',border:'1px solid rgba(124,58,237,0.2)'}}>
-                <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#7c3aed',fontWeight:500,letterSpacing:'0.06em'}}>星球设定</span>
-                <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#64748b',fontWeight:300}}> · 已根据星系环境预设大气成分、重力指标、水资源类型。顺从设定，还是偏离轨道挑战更奇妙的未知世界——由你决定！</span>
-              </div>
-
-              <div className="space-y-4">
-                {/* Name */}
-                <div>
-                  <label className="block mb-1" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.82rem',color:'#94a3b8',fontWeight:300}}>
-                    <span className="inline-flex items-center gap-1.5"><Sparkles size={13}/> 星球名称</span>
-                  </label>
-                  <input type="text" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleGenerate()}
-                    placeholder="为你的星球命名..." maxLength={20} className="w-full px-4 py-2.5 focus:outline-none"
-                    style={{background:'rgba(12,7,32,0.9)',border:`1px solid ${nameError?'rgba(239,68,68,0.65)':'rgba(109,40,217,0.4)'}`,fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1rem',color:'#e2e8f0',fontWeight:300,animation:nameError?'shake 0.35s ease':'none'}}/>
-                  {nameError&&<p style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.78rem',color:'#ef4444',marginTop:'3px'}}>▶ 请为你的星球命名</p>}
-                </div>
+             <div className="space-y-4">
+  {/* Name */}
+  <div>
+    <label className="block mb-1" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.82rem',color:'#94a3b8',fontWeight:300}}>
+      <span className="inline-flex items-center gap-1.5"><Sparkles size={13}/> 星球名称</span>
+    </label>
+    <input type="text" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&handleGenerate()}
+      placeholder="为你的星球命名..." maxLength={20} className="w-full px-4 py-2.5 focus:outline-none"
+      style={{background:'rgba(12,7,32,0.9)',border:`1px solid ${nameError?'rgba(239,68,68,0.65)':'rgba(109,40,217,0.4)'}`,fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1rem',color:'#e2e8f0',fontWeight:300,animation:nameError?'shake 0.35s ease':'none'}}/>
+    {nameError&&<p style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.78rem',color:'#ef4444',marginTop:'3px'}}>▶ 请为你的星球命名</p>}
+  </div>
+  {/* Planet setting hint - 移到星球名之后，大气层之前 */}
+  <p style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#64748b',fontWeight:300,margin:'0 0 4px',lineHeight:1.6}}>
+    <span style={{color:'#7c3aed',fontWeight:500}}>星球设定</span>
+    {' · '}已根据星系环境预设大气成分、重力指标、水资源类型。顺从设定，还是偏离轨道挑战更奇妙的未知世界——由你决定！
+  </p>
 
                 <PixelSelect label="大气层成分" icon={<Wind size={13}/>} value={atmosphere} options={ATMOSPHERE_OPTIONS} onChange={setAtmosphere}/>
                 <PixelSelect label="重力强度" icon={<Zap size={13}/>} value={gravity} options={GRAVITY_OPTIONS} onChange={setGravity}/>
