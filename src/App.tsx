@@ -200,7 +200,7 @@ function Starfield() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const canvas = canvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext('2d'); if (!ctx) return;
+    const ctx = canvas.getContext('2d')!;
     const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
     resize(); window.addEventListener('resize', resize);
     const stars = Array.from({length:220},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+0.2,alpha:Math.random(),delta:(Math.random()-0.5)*0.006,color:Math.random()>0.82?`hsl(${200+Math.random()*60},80%,85%)`:'white'}));
@@ -225,7 +225,7 @@ function PixelPlanet({atmosphere,water,gravity,flag,planetName}:{atmosphere:stri
 
   useEffect(()=>{
     const canvas = canvasRef.current; if(!canvas) return;
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D; if(!ctx) return;
+    const ctx = canvas.getContext('2d')!;
     const dpr = window.devicePixelRatio||1;
     const W=220, H=220;
     canvas.width=W*dpr; canvas.height=H*dpr;
@@ -423,7 +423,7 @@ function PlanetCard({planet,onClaim}:{planet:PlanetData;onClaim:()=>void}) {
   return (
     <div className="flex flex-col h-full" style={{opacity:visible?1:0,transform:visible?'translateX(0)':'translateX(28px)',transition:'opacity 0.45s ease,transform 0.45s ease'}}>
       <div className="flex justify-center mb-2">
-        <PixelPlanet atmosphere={planet.atmosphere} water={planet.water} gravity={planet.gravity} flag={planet.flag}/>
+        <PixelPlanet atmosphere={planet.atmosphere} water={planet.water} gravity={planet.gravity} flag={planet.flag} planetName={planet.name}/>
       </div>
       <div className="text-center mb-3">
         <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1.1rem',fontWeight:500,color:'#7dd3fc',wordBreak:'break-all'}}>{planet.name}</div>
