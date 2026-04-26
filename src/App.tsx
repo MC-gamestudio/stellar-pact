@@ -298,8 +298,8 @@ function PixelPlanet({atmosphere,water,gravity,flag,planetName}:{atmosphere:stri
       orbitAngle += 0.012;
       const mx=cx+Math.cos(orbitAngle)*(r+28);
       const my=cy+Math.sin(orbitAngle)*10;
-      ctx.beginPath(); ctx.arc(mx,my,8,0,Math.PI*2);
-      ctx.fillStyle=flag.color; ctx.fill();
+      ctx.fillStyle=flag.color;
+      ctx.fillRect(mx-14, my-9, 28, 18);
       ctx.fillStyle='rgba(255,255,255,0.9)';
       ctx.font='9px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
       ctx.fillText(flag.shape,mx,my);
