@@ -562,7 +562,7 @@ export default function App() {
           <div className="w-full max-w-5xl" style={{background:'rgba(7,3,22,0.82)',border:'1px solid rgba(109,40,217,0.3)',backdropFilter:'blur(14px)',padding:'20px'}}>
             <div className="flex items-center gap-2 mb-4">
               <Star size={12} style={{color:'#7c3aed'}}/>
-              <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.8rem',color:'#7c3aed',fontWeight:300}}>宇宙星系登记处 · 选择一个星系，开始你的文明之旅</span>
+              <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.85rem',color:'#7c3aed',fontWeight:300}}>宇宙星系登记处 · 选择一个星系，开始你的文明之旅</span>
             </div>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索星系名称、类型或环境标签..."
               className="w-full px-4 py-2.5 mb-4 focus:outline-none"
@@ -589,7 +589,7 @@ export default function App() {
             {/* Form */}
             <div className="flex-1 p-5 md:p-6" style={{background:'rgba(7,3,22,0.82)',border:'1px solid rgba(109,40,217,0.3)',backdropFilter:'blur(14px)'}}>
               <button onClick={()=>{setStep('galaxy');setPlanet(null);}} className="flex items-center gap-1.5 mb-4 transition-opacity hover:opacity-70"
-                style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.78rem',color:'#7c3aed',fontWeight:300}}>
+                style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.85rem',color:'#7c3aed',fontWeight:300}}>
                 <ArrowLeft size={12}/> 返回星系选择
               </button>
               {/* Galaxy badge */}
@@ -659,7 +659,7 @@ export default function App() {
                 <div key={cardKey} className="flex flex-col h-full">
                   <div className="flex items-center gap-2 mb-3">
                     <div style={{width:6,height:6,background:'#0284c7'}}/>
-                    <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.8rem',color:'#475569',fontWeight:300}}>星球档案</span>
+                    <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.8rem',color:'#10b981',fontWeight:300}}>星球档案</span>
                   </div>
                   <PlanetCard planet={planet} onClaim={handleClaim}/>
                 </div>
@@ -681,7 +681,7 @@ export default function App() {
         {/* Success */}
         {step==='success'&&claimedPlanet&&<SuccessScreen planet={claimedPlanet} onReset={handleReset}/>}
 
-        <p className="mt-6 text-center select-none" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#7c3aed',letterSpacing:'0.15em',fontWeight:300}}>
+        <p className="mt-6 text-center select-none" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.85rem',color:'#7c3aed',letterSpacing:'0.15em',fontWeight:300}}>
           STELLAR PACT · 宇宙星球登记系统 · 所有星球均受星际公约保护
         </p>
       </div>
