@@ -598,12 +598,7 @@ export default function App() {
                 <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#475569',fontWeight:300}}>{selectedGalaxy.id} · {selectedGalaxy.dist}</span>
               </div>
 
-              {/* Planet setting unified hint */}
-              <div className="mb-4 px-3 py-2.5" style={{background:'rgba(124,58,237,0.06)',border:'1px solid rgba(124,58,237,0.2)'}}>
-                <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#7c3aed',fontWeight:500,letterSpacing:'0.06em'}}>星球设定</span>
-                <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#64748b',fontWeight:300}}> · 已根据星系环境预设大气成分、重力指标、水资源类型。顺从设定，还是偏离轨道挑战更奇妙的未知世界——由你决定！</span>
-              </div>
-
+              
               <div className="space-y-4">
                 {/* Name */}
                 <div>
