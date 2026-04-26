@@ -112,7 +112,7 @@ const GRAVITY_OPTIONS = ['微重力 0.1x','轻重力 0.3x','轻重力 0.5x','亚
 const WATER_OPTIONS = ['无水干燥','地下水脉','冰封型','沙漠型','云海型','海洋型','超级海洋','酸液海洋','液态甲烷海','多相态混合'];
 
 const FLAG_SHAPES = ['▶','◆','●','★','⬟','⬡','⬢','✦','⊕','⊗'];
-const FLAG_COLORS = ['#ef4444','#f97316','#eab308','#10b981','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#f1f5f9','#94a3b8'];
+const FLAG_COLORS = ['#ef4444','#f97316','#eab308','#10b981','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#f43f5e','#94a3b8'];
 
 // ─── Civilization description generator ───────────────────────────────────────
 
@@ -300,9 +300,10 @@ function PixelPlanet({atmosphere,water,gravity,flag,planetName}:{atmosphere:stri
       const my=cy+Math.sin(orbitAngle)*10;
       ctx.fillStyle=flag.color;
       ctx.fillRect(mx-14, my-9, 28, 18);
-      ctx.fillStyle='rgba(255,255,255,0.9)';
-      ctx.font='9px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(flag.shape,mx,my);
+      ctx.strokeStyle='rgba(0,0,0,0.5)'; ctx.lineWidth=3;
+      ctx.font='bold 10px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.strokeText(flag.shape,mx,my);
+      ctx.fillStyle='white'; ctx.fillText(flag.shape,mx,my);
       ctx.font='500 11px sans-serif';
       ctx.textAlign='center'; ctx.textBaseline='bottom';
       ctx.fillStyle='rgba(255,255,255,0.92)';
@@ -561,7 +562,7 @@ export default function App() {
           <div className="w-full max-w-5xl" style={{background:'rgba(7,3,22,0.82)',border:'1px solid rgba(109,40,217,0.3)',backdropFilter:'blur(14px)',padding:'20px'}}>
             <div className="flex items-center gap-2 mb-4">
               <Star size={12} style={{color:'#7c3aed'}}/>
-              <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.8rem',color:'#475569',fontWeight:300}}>宇宙星系登记处 · 选择一个星系，开始你的文明之旅</span>
+              <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.8rem',color:'#7c3aed',fontWeight:300}}>宇宙星系登记处 · 选择一个星系，开始你的文明之旅</span>
             </div>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索星系名称、类型或环境标签..."
               className="w-full px-4 py-2.5 mb-4 focus:outline-none"
@@ -572,7 +573,7 @@ export default function App() {
                 <div key={tag} className="flex items-center gap-1.5">
                   <span style={{fontSize:'0.8rem'}}>{cfg.icon}</span>
                   <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:cfg.color,fontWeight:400}}>{tag}</span>
-                  <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#334155',fontWeight:300}}>— {cfg.desc}</span>
+                  <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#7dd3fc',fontWeight:300}}>— {cfg.desc}</span>
                 </div>
               ))}
             </div>
@@ -588,7 +589,7 @@ export default function App() {
             {/* Form */}
             <div className="flex-1 p-5 md:p-6" style={{background:'rgba(7,3,22,0.82)',border:'1px solid rgba(109,40,217,0.3)',backdropFilter:'blur(14px)'}}>
               <button onClick={()=>{setStep('galaxy');setPlanet(null);}} className="flex items-center gap-1.5 mb-4 transition-opacity hover:opacity-70"
-                style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.78rem',color:'#475569',fontWeight:300}}>
+                style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.78rem',color:'#7c3aed',fontWeight:300}}>
                 <ArrowLeft size={12}/> 返回星系选择
               </button>
               {/* Galaxy badge */}
@@ -626,7 +627,7 @@ export default function App() {
                     <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.82rem',color:'#94a3b8',fontWeight:300}}>球旗设计</span>
                   </div>
                   <div className="mb-3">
-                    <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#475569',marginBottom:'6px',fontWeight:300}}>旗帜颜色</div>
+                    <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#7dd3fc',marginBottom:'6px',fontWeight:300}}>旗帜颜色</div>
                     <div className="flex flex-wrap gap-2">
                       {FLAG_COLORS.map(c=>(
                         <button key={c} onClick={()=>setFlagColor(c)} style={{width:22,height:22,background:c,border:flagColor===c?'2px solid white':'2px solid transparent',borderRadius:'3px',transition:'transform 0.1s'}}
@@ -636,7 +637,7 @@ export default function App() {
                     </div>
                   </div>
                   <div>
-                    <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#475569',marginBottom:'6px',fontWeight:300}}>旗帜纹章</div>
+                    <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#7dd3fc',marginBottom:'6px',fontWeight:300}}>旗帜纹章</div>
                     <div className="flex flex-wrap gap-2">
                       {FLAG_SHAPES.map(s=>(
                         <button key={s} onClick={()=>setFlagShape(s)} style={{width:28,height:28,background:flagShape===s?`${flagColor}30`:'rgba(15,10,40,0.8)',border:flagShape===s?`1px solid ${flagColor}`:'1px solid rgba(139,92,246,0.2)',borderRadius:'3px',fontSize:'14px',color:flagShape===s?flagColor:'#64748b',display:'flex',alignItems:'center',justifyContent:'center'}}>{s}</button>
@@ -680,7 +681,7 @@ export default function App() {
         {/* Success */}
         {step==='success'&&claimedPlanet&&<SuccessScreen planet={claimedPlanet} onReset={handleReset}/>}
 
-        <p className="mt-6 text-center select-none" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#1e293b',letterSpacing:'0.15em',fontWeight:300}}>
+        <p className="mt-6 text-center select-none" style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#7c3aed',letterSpacing:'0.15em',fontWeight:300}}>
           STELLAR PACT · 宇宙星球登记系统 · 所有星球均受星际公约保护
         </p>
       </div>
