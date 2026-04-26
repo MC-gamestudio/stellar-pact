@@ -610,7 +610,7 @@ export default function App() {
                     style={{background:'rgba(12,7,32,0.9)',border:`1px solid ${nameError?'rgba(239,68,68,0.65)':'rgba(109,40,217,0.4)'}`,fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1rem',color:'#e2e8f0',fontWeight:300,animation:nameError?'shake 0.35s ease':'none'}}/>
                   {nameError&&<p style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.78rem',color:'#ef4444',marginTop:'3px'}}>▶ 请为你的星球命名</p>}
                 </div>
-                <p style={{marginTop: '20px',paddingTop: '10px',borderTop: '1px solid rgba(124,58,237,0.15)',fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#64748b',fontWeight:300,lineHeight:1.6}}>
+                <p style={{marginTop: '40px',paddingTop: '10px',borderTop: '1px solid rgba(124,58,237,0.15)',fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.75rem',color:'#64748b',fontWeight:300,lineHeight:1.6}}>
                   <span style={{color:'#7c3aed',fontWeight:500}}>星球设定</span>
                   {' · '}已根据星系环境预设大气成分、重力指标、水资源类型。顺从设定，还是偏离轨道挑战更奇妙的未知世界——由你决定！
                 </p>
