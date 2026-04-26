@@ -112,13 +112,7 @@ const GRAVITY_OPTIONS = ['微重力 0.1x','轻重力 0.3x','轻重力 0.5x','亚
 const WATER_OPTIONS = ['无水干燥','地下水脉','冰封型','沙漠型','云海型','海洋型','超级海洋','酸液海洋','液态甲烷海','多相态混合'];
 
 const FLAG_SHAPES = ['⚔','✠','☣','♇','♁','♆','⚚','⛧','☯','⊗','⊜','⊚','✺','⌇'];
-const FLAG_COLORS = [
-  'linear-gradient(135deg, #facc15, #ef4444)',
-  'linear-gradient(135deg, #22c55e, #4ade80)',
-  'linear-gradient(135deg, #fb7185, #f43f5e)',
-  'linear-gradient(135deg, #c084fc, #7c3aed)',
-  'linear-gradient(135deg, #38bdf8, #0ea5e9)',
-];
+const FLAG_COLORS = ['#ef4444','#f97316','#eab308','#10b981','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#f43f5e','#94a3b8'];
 
 // ─── Civilization description generator ───────────────────────────────────────
 
