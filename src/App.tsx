@@ -612,7 +612,7 @@ export default function App() {
               <div className="flex items-center gap-2 mb-3 px-3 py-2" style={{background:`${selectedGalaxy.color}10`,border:`1px solid ${selectedGalaxy.color}30`}}>
                 <div style={{width:6,height:6,borderRadius:'50%',background:selectedGalaxy.color}}/>
                 <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.9rem',fontWeight:500,color:selectedGalaxy.color}}>{selectedGalaxy.name}</span>
-                <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#475569',fontWeight:300}}>{selectedGalaxy.id} · {selectedGalaxy.dist}</span>
+                <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#64748b',fontWeight:300}}>{selectedGalaxy.id} · {selectedGalaxy.dist}</span>
               </div>
 
               
