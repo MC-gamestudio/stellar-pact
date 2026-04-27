@@ -112,7 +112,18 @@ const GRAVITY_OPTIONS = ['微重力 0.1x','轻重力 0.3x','轻重力 0.5x','亚
 const WATER_OPTIONS = ['无水干燥','地下水脉','冰封型','沙漠型','云海型','海洋型','超级海洋','酸液海洋','液态甲烷海','多相态混合'];
 
 const FLAG_SHAPES = ['⚔','✠','☣','♇','♁','♆','⚚','⛧','☯','⊗','⊜','⊚','✺','⌇'];
-const FLAG_COLORS = ['#ef4444','#f97316','#eab308','#10b981','#06b6d4','#3b82f6','#8b5cf6','#ec4899','#f43f5e','#94a3b8'];
+const FLAG_GRADIENTS: [string,string][] = [
+  ['#ef4444','#f97316'],  // 熔岩
+  ['#f97316','#eab308'],  // 日落
+  ['#8b5cf6','#06b6d4'],  // 星云
+  ['#10b981','#06b6d4'],  // 极光
+  ['#3b82f6','#8b5cf6'],  // 深空
+  ['#ec4899','#8b5cf6'],  // 银河
+  ['#f43f5e','#a855f7'],  // 暗物质
+  ['#0ea5e9','#10b981'],  // 海洋
+  ['#eab308','#ef4444'],  // 战火
+  ['#a855f7','#ec4899'],  // 虹彩
+];
 
 // ─── Civilization description generator ───────────────────────────────────────
 
@@ -191,7 +202,7 @@ const getGravityScale = (grav: string) => {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface FlagConfig { shape: string; color: string; }
+interface FlagConfig { shape: string; color: string; gradient?: [string,string]; }
 interface PlanetData { name: string; atmosphere: string; gravity: string; water: string; galaxy: GalaxyData; flag: FlagConfig; }
 
 // ─── Starfield ────────────────────────────────────────────────────────────────
@@ -298,8 +309,13 @@ function PixelPlanet({atmosphere,water,gravity,flag,planetName}:{atmosphere:stri
       orbitAngle += 0.012;
       const mx=cx+Math.cos(orbitAngle)*(r+28);
       const my=cy+Math.sin(orbitAngle)*10;
-      ctx.fillStyle=flag.color;
-      ctx.fillRect(mx-14, my-9, 28, 18);
+      const [ca,cb]=flag.gradient??[flag.color,flag.color];
+      const fg=ctx.createLinearGradient(mx-14,my-9,mx+14,my+9);
+      fg.addColorStop(0,ca); fg.addColorStop(1,cb);
+      ctx.fillStyle=fg;
+      ctx.fillRect(mx-14,my-9,28,18);
+      ctx.strokeStyle=ca+'80'; ctx.lineWidth=1;
+      ctx.strokeRect(mx-14,my-9,28,18);
       ctx.strokeStyle='rgba(0,0,0,0.5)'; ctx.lineWidth=3;
       ctx.font='bold 12px monospace'; ctx.textAlign='center'; ctx.textBaseline='middle';
       ctx.strokeText(flag.shape,mx,my);
@@ -367,7 +383,7 @@ function GalaxyCard({galaxy,onSelect}:{galaxy:GalaxyData;onSelect:()=>void}) {
       <div className="flex items-start justify-between gap-2 mb-2 pl-2">
         <div>
           <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1rem',fontWeight:500,color:'#f1f5f9',marginBottom:'2px'}}>{galaxy.name}</div>
-          <div style={{fontFamily:"'VT323',monospace",fontSize:'0.7rem',color:'#334155',letterSpacing:'0.12em'}}>{galaxy.id}</div>
+          <div style={{fontFamily:"'VT323',monospace",fontSize:'0.7rem',color:'#64748b',letterSpacing:'0.12em'}}>{galaxy.id}</div>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
           <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#475569'}}>{galaxy.dist}</span>
@@ -428,7 +444,7 @@ function PlanetCard({planet,onClaim}:{planet:PlanetData;onClaim:()=>void}) {
       </div>
       <div className="text-center mb-3">
         <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1.1rem',fontWeight:500,color:'#7dd3fc',wordBreak:'break-all'}}>{planet.name}</div>
-        <div style={{fontFamily:"'VT323',monospace",fontSize:'0.75rem',color:'#334155',letterSpacing:'0.15em',marginTop:'3px'}}>ID: {idRef.current} · {planet.galaxy.name}</div>
+        <div style={{fontFamily:"'VT323',monospace",fontSize:'0.75rem',color:'#7dd3fc',letterSpacing:'0.15em',marginTop:'3px'}}>ID: {idRef.current} · {planet.galaxy.name}</div>
       </div>
       <div className="w-full mb-3" style={{height:'1px',background:'linear-gradient(to right,transparent,rgba(139,92,246,0.5),transparent)'}}/>
       <div className="space-y-1.5 mb-3">
@@ -489,7 +505,7 @@ export default function App() {
   const [gravity,setGravity]=useState(GRAVITY_OPTIONS[4]);
   const [water,setWater]=useState(WATER_OPTIONS[5]);
   const [flagShape,setFlagShape]=useState(FLAG_SHAPES[0]);
-  const [flagColor,setFlagColor]=useState(FLAG_COLORS[0]);
+  const [flagGradient,setFlagGradient]=useState<[string,string]>(FLAG_GRADIENTS[0]);
   const [planet,setPlanet]=useState<PlanetData|null>(null);
   const [generating,setGenerating]=useState(false);
   const [cardKey,setCardKey]=useState(0);
@@ -510,7 +526,7 @@ export default function App() {
     if(!name.trim()){setNameError(true);setTimeout(()=>setNameError(false),700);return;}
     setGenerating(true);setPlanet(null);
     setTimeout(()=>{
-      setPlanet({name:name.trim(),atmosphere,gravity,water,galaxy:selectedGalaxy!,flag:{shape:flagShape,color:flagColor}});
+      setPlanet({name:name.trim(),atmosphere,gravity,water,galaxy:selectedGalaxy!,flag:{shape:flagShape,color:flagGradient[0],gradient:flagGradient}});
       setCardKey(k=>k+1);setGenerating(false);
     },900);
   },[name,atmosphere,gravity,water,selectedGalaxy,flagShape,flagColor]);
@@ -629,12 +645,15 @@ export default function App() {
                   <div className="mb-3">
                     <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#7dd3fc',marginBottom:'6px',fontWeight:300}}>旗帜颜色</div>
                     <div className="flex flex-wrap gap-2">
-                      {FLAG_COLORS.map(c=>(
-                        <button key={c} onClick={()=>setFlagColor(c)} style={{width:22,height:22,background:c,border:flagColor===c?'2px solid white':'2px solid transparent',borderRadius:'3px',transition:'transform 0.1s'}}
-                          onMouseEnter={e=>(e.currentTarget as HTMLElement).style.transform='scale(1.2)'}
-                          onMouseLeave={e=>(e.currentTarget as HTMLElement).style.transform='scale(1)'}/>
-                      ))}
-                    </div>
+                     {FLAG_GRADIENTS.map((g,i)=>(
+                     <button key={i} onClick={()=>setFlagGradient(g)}
+                     style={{width:36,height:22,background:`linear-gradient(135deg,${g[0]},${g[1]})`,
+                     border:JSON.stringify(flagGradient)===JSON.stringify(g)?'2px solid white':'2px solid transparent',
+                     borderRadius:'3px',transition:'transform 0.1s'}}
+                     onMouseEnter={e=>(e.currentTarget as HTMLElement).style.transform='scale(1.15)'}
+                     onMouseLeave={e=>(e.currentTarget as HTMLElement).style.transform='scale(1)'}/>
+                 ))}
+                  </div>
                   </div>
                   <div>
                     <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#7dd3fc',marginBottom:'6px',fontWeight:300}}>旗帜纹章</div>
