@@ -444,7 +444,7 @@ function PlanetCard({planet,onClaim}:{planet:PlanetData;onClaim:()=>void}) {
       </div>
       <div className="text-center mb-3">
         <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'1.1rem',fontWeight:500,color:'#7dd3fc',wordBreak:'break-all'}}>{planet.name}</div>
-        <div style={{fontFamily:"'VT323',monospace",fontSize:'0.75rem',color:'#7dd3fc',letterSpacing:'0.15em',marginTop:'3px'}}>ID: {idRef.current} · {planet.galaxy.name}</div>
+        <div style={{fontFamily:"'VT323',monospace",fontSize:'0.75rem',color:'#64748b',letterSpacing:'0.15em',marginTop:'3px'}}>ID: {idRef.current} · {planet.galaxy.name}</div>
       </div>
       <div className="w-full mb-3" style={{height:'1px',background:'linear-gradient(to right,transparent,rgba(139,92,246,0.5),transparent)'}}/>
       <div className="space-y-1.5 mb-3">
