@@ -386,7 +386,7 @@ function GalaxyCard({galaxy,onSelect}:{galaxy:GalaxyData;onSelect:()=>void}) {
           <div style={{fontFamily:"'VT323',monospace",fontSize:'0.7rem',color:'#64748b',letterSpacing:'0.12em'}}>{galaxy.id}</div>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#7dd3fc'}}>{galaxy.dist}</span>
+          <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#64748b'}}>{galaxy.dist}</span>
           <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:env.color,background:`${env.color}18`,padding:'1px 7px',borderRadius:'3px',fontWeight:500}}>{env.icon} {galaxy.env}</span>
         </div>
       </div>
