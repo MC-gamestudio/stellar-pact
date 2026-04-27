@@ -386,7 +386,7 @@ function GalaxyCard({galaxy,onSelect}:{galaxy:GalaxyData;onSelect:()=>void}) {
           <div style={{fontFamily:"'VT323',monospace",fontSize:'0.7rem',color:'#64748b',letterSpacing:'0.12em'}}>{galaxy.id}</div>
         </div>
         <div className="flex flex-col items-end gap-1 shrink-0">
-          <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#475569'}}>{galaxy.dist}</span>
+          <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:'#7dd3fc'}}>{galaxy.dist}</span>
           <span style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.68rem',color:env.color,background:`${env.color}18`,padding:'1px 7px',borderRadius:'3px',fontWeight:500}}>{env.icon} {galaxy.env}</span>
         </div>
       </div>
@@ -529,7 +529,7 @@ export default function App() {
       setPlanet({name:name.trim(),atmosphere,gravity,water,galaxy:selectedGalaxy!,flag:{shape:flagShape,color:flagGradient[0],gradient:flagGradient}});
       setCardKey(k=>k+1);setGenerating(false);
     },900);
-  },[name,atmosphere,gravity,water,selectedGalaxy,flagShape,flagColor]);
+  },[name,atmosphere,gravity,water,selectedGalaxy,flagShape,flagGradient]);
 
   const handleClaim=useCallback(()=>{
     if(planet){setClaimedPlanet(planet);setShowClaim(true);}
@@ -659,8 +659,8 @@ export default function App() {
                     <div style={{fontFamily:"'Noto Sans SC',sans-serif",fontSize:'0.72rem',color:'#7dd3fc',marginBottom:'6px',fontWeight:300}}>旗帜纹章</div>
                     <div className="flex flex-wrap gap-2">
                       {FLAG_SHAPES.map(s=>(
-                        <button key={s} onClick={()=>setFlagShape(s)} style={{width:28,height:28,background:flagShape===s?`${flagColor}30`:'rgba(15,10,40,0.8)',border:flagShape===s?`1px solid ${flagColor}`:'1px solid rgba(139,92,246,0.2)',borderRadius:'3px',fontSize:'14px',color:flagShape===s?flagColor:'#64748b',display:'flex',alignItems:'center',justifyContent:'center'}}>{s}</button>
-                      ))}
+                     <button key={s} onClick={()=>setFlagShape(s)} style={{width:28,height:28,background:flagShape===s?`${flagGradient[0]}30`:'rgba(15,10,40,0.8)',border:flagShape===s?`1px solid ${flagGradient[0]}`:'1px solid rgba(139,92,246,0.2)',borderRadius:'3px',fontSize:'14px',color:flagShape===s?flagGradient[0]:'#64748b',display:'flex',alignItems:'center',justifyContent:'center'}}>{s}</button>
+                     ))}
                     </div>
                   </div>
                 </div>
